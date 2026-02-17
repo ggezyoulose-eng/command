@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>スクリプトボット</title>
+    <style>
+        :root {
+            --line-bg: #7494C0;
+            --my-bubble: #85E249;
+            --bot-bubble: #FFFFFF;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--line-bg);
+            font-family: -apple-system, "Helvetica Neue", "Hiragino Kaku Gothic ProN", sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .header {
+            background-color: rgba(0, 0, 0, 0.2);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 17px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .bubble {
+            max-width: 75%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 15px;
+            line-height: 1.4;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .bot {
+            align-self: flex-start;
+            background-color: var(--bot-bubble);
+            color: black;
+            margin-left: 10px;
+            border-bottom-left-radius: 2px;
+        }
+
+        .user {
+            align-self: flex-end;
+            background-color: var(--my-bubble);
+            color: black;
+            margin-right: 10px;
+            border-bottom-right-radius: 2px;
+        }
+
+        code {
+            display: block;
+            background: rgba(0,0,0,0.05);
+            padding: 8px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 11px;
+            margin-top: 8px;
+            border: 1px solid rgba(0,0,0,0.1);
+            user-select: all; /* タップで全選択しやすく */
+        }
+
+        .input-area {
+            background-color: white;
+            padding: 10px 15px 30px 15px; /* 下部に余裕を（iPhone用） */
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        input {
+            flex: 1;
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            border-radius: 25px;
+            outline: none;
+            background: #f1f1f2;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: transparent;
+            border: none;
+            color: #007AFF;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .help-list {
+            margin: 0;
+            padding-left: 15px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">スクリプト配布bot</div>
+
+    <div class="chat-area" id="chatArea">
+        <div class="bubble bot">
+            こんにちは！キーワードを送信するとスクリプトを返信します。<br>
+            コマンド「<b>/コマンド</b>」でキーワード一覧を確認できます。
+        </div>
+        <div class="bubble user">ブレロ</div>
+        <div class="bubble bot">
+            ミランダ<br><code>loadstring(game:HttpGet("https://pastefy.app/JJVhs3rK/raw"))()</code><br>
+            ラグ<br><code>loadstring(game:HttpGet("https://tcscripts.discloud.app/scripts/lagsemaura"))()</code><br>
+            ラグv8<br><code>loadstring(game:HttpGet("https://files.zvyz.live/scripts/Cracked/TSKSkids/SVD8_Crack.luau"))()</code>
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="メッセージを入力...">
+        <button id="sendBtn">送信</button>
+    </div>
+
+    <script>
+        const chatArea = document.getElementById('chatArea');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        function addMessage(text, isUser = false) {
+            const div = document.createElement('div');
+            div.className = `bubble ${isUser ? 'user' : 'bot'}`;
+            div.innerHTML = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function handleSend() {
+            const msg = userInput.value.trim();
+            if (!msg) return;
+
+            addMessage(msg, true);
+            userInput.value = '';
+
+            setTimeout(() => {
+                let response = "";
+                const lowMsg = msg.toLowerCase();
+
+                // ヘルプコマンド
+                if (msg === "/コマンド" || msg === "/help") {
+                    response = `【キーワード一覧】<br>
+                    <ul class="help-list">
+                        <li>ブレロ / ブレインロットを盗む</li>
+                        <li>ブロフ / ブロックスフルーツ / ブロフル</li>
+                        <li>ぷり / プリ</li>
+                        <li>物人 / 物や人を飛ばす</li>
+                        <li>フライ / fly</li>
+                    </ul>`;
+                }
+                // 各キーワード判定
+                else if (msg.includes("ブレロ") || msg.includes("ブレインロットを盗む")) {
+                    response = `ミランダ<br><code>loadstring(game:HttpGet("https://pastefy.app/JJVhs3rK/raw"))()</code><br>ラグ<br><code>loadstring(game:HttpGet("https://tcscripts.discloud.app/scripts/lagsemaura"))()</code><br>ラグv8<br><code>loadstring(game:HttpGet("https://files.zvyz.live/scripts/Cracked/TSKSkids/SVD8_Crack.luau"))()</code>`;
+                } 
+                else if (msg.includes("ブロフ") || msg.includes("ブロックスフルーツ") || msg.includes("ブロフル")) {
+                    response = `Xle<br><code>loadstring(game:HttpGet("https://raw.githubusercontent.com/TlDinhKhoi/Xeter/refs/heads/main/Main.lua"))()</code>`;
+                }
+                else if (msg.includes("ぷり") || msg.includes("プリ")) {
+                    response = `500🥧でアンチヒット(殴られても飛ばない)とオートエイムスクリプト渡します！`;
+                }
+                else if (msg.includes("物人") || msg.includes("物や人を飛ばす")) {
+                    response = `blitz<br><code>loadstring(game:HttpGet("https://rawscripts.net/raw/Fling-Things-and-People-Blitz-Hub-35430"))()</code><br>alan hub<br><code>loadstring(game:HttpGet("https://raw.githubusercontent.com/Artss1/Flades_Hub/refs/heads/main/We%20Are%20Arts.lua"))()</code>`;
+                }
+                else if (lowMsg.includes("フライ") || lowMsg.includes("fly")) {
+                    response = `Fly GUI<br><code>loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()</code>`;
+                }
+                else {
+                    response = "そのキーワードには対応していません。「/コマンド」と打ってみてください。";
+                }
+
+                addMessage(response, false);
+            }, 600);
+        }
+
+        sendBtn.addEventListener('click', handleSend);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+    </script>
+</body>
+</html>
